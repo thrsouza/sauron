@@ -4,11 +4,18 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.github.thrsouza.sauron.models.PreRegister;
+
 @Service
 public class CreatePreRegisterService {
 
     public Output execute(Input input) {
-        return new Output(UUID.randomUUID());
+        PreRegister preRegister = PreRegister.create(
+            input.document(), 
+            input.name(), 
+            input.email());
+            
+        return new Output(preRegister.id());
     }
 
     public record Input(String document, String name, String email) { }
