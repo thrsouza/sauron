@@ -1,25 +1,26 @@
 Sauron
 ======
 
-Sauron is a Spring Boot sample service that captures customer pre-registrations and keeps a single, authoritative view of who has asked to join. Much like the Eye of Sauron watches every corner of Middle-earth, this service keeps an unblinking eye on incoming leads so none slip through unnoticed.
+Sauron is a Spring Boot sample service that manages customer registrations and their approval workflow based on document (CPF) validation and credit score evaluation. Much like the Eye of Sauron watches every corner of Middle-earth, this service keeps an unblinking eye on customer registrations, ensuring each application is properly evaluated before approval or rejection.
 
 ![Sauron](./assets/sauron.webp "Sauron")
 
-Why “Sauron”?
+Why "Sauron"?
 -------------
 
-The story behind the name is a playful nod to Tolkien’s Eye of Sauron. In the books, the Eye is relentless, always searching for any sign of disturbance. In this project, the eye focuses on prospects: every pre-registration is spotted instantly, deduplicated, and tracked from the moment it appears. The service acts as the watchtower for new customers, making sure the business always knows who is waiting at the gates.
+The story behind the name is a playful nod to Tolkien's Eye of Sauron. In the books, the Eye is relentless, always searching for any sign of disturbance. In this project, the eye focuses on customer registrations: every submission is spotted instantly, deduplicated, and tracked from the moment it appears. The service acts as the watchtower for new customers, evaluating their documents and credit scores to determine who shall be approved or rejected.
 
 Features
 --------
 
-- Idempotent pre-registration flow powered by `CreatePreRegisterUseCase`, which reuses the same identifier when the same document is submitted again.
-- Ports and Adapters architecture layering:
+- Idempotent customer registration flow powered by `CreateCustomerUseCase`, which reuses the same identifier when the same document is submitted again.
+- Customer status management with three states: `PENDING` (awaiting evaluation), `APPROVED` (passed credit score evaluation), and `REJECTED` (failed evaluation).
+- Clean Architecture (Ports and Adapters) layering:
   - Domain models live in `src/main/java/com/github/thrsouza/sauron/domain`.
-  - Application use cases and interfaces are in `application`.
+  - Application use cases and repository interfaces are in `application`.
   - Infrastructure adapters (REST controller, JPA repository, configuration) are in `infrastructure`.
 - Persistence handled by Spring Data JPA on top of an in-memory H2 database (ideal for demos and tests).
-- Lightweight REST API that can be extended with approval/rejection flows as the product grows.
+- Lightweight REST API ready for integration with credit score evaluation services.
 
 Tech Stack
 ----------
@@ -55,9 +56,9 @@ By default the service starts on `http://localhost:8080` and uses an in-memory H
 REST API
 --------
 
-`POST /api/customer/register`
+`POST /api/customers/register`
 
-- Purpose: Create (or reuse) a customer pre-registration record.
+- Purpose: Create (or reuse) a customer registration record with `PENDING` status awaiting credit score evaluation.
 - Request body:
 
 ```json
@@ -76,7 +77,7 @@ REST API
 }
 ```
 
-If a pre-register already exists for the given `document`, the service returns the existing identifier. This makes the endpoint safe to call multiple times without creating duplicates.
+If a customer already exists for the given `document`, the service returns the existing identifier. This makes the endpoint safe to call multiple times without creating duplicates. The customer remains in `PENDING` status until approved or rejected through the evaluation process.
 
 Project Layout
 --------------
@@ -92,9 +93,10 @@ src/main/java/com/github/thrsouza/sauron/
 Next Steps
 ----------
 
-- Introduce endpoints to approve or reject pending pre-registrations.
+- Integrate with external credit score evaluation services to automatically approve or reject customers based on their document/CPF.
+- Implement query endpoints to list customers by status (pending, approved, rejected).
 - Add persistence migrations (e.g., Flyway) when moving beyond the in-memory database.
-- Integrate observability (logging/metrics) so the Eye can report what it sees.
+- Integrate observability (logging/metrics) so the Eye can report what it sees and tracks the evaluation process.
 
 License
 -------

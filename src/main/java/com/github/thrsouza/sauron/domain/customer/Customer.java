@@ -1,21 +1,21 @@
-package com.github.thrsouza.sauron.domain.preregister;
+package com.github.thrsouza.sauron.domain.customer;
 
 import java.time.Instant;
 import java.util.UUID;
 
 import com.github.thrsouza.sauron.domain.DomainEntity;
 
-public class PreRegister implements DomainEntity {
+public class Customer implements DomainEntity {
 
     private final UUID id;
     private final String document;
     private final String name;
     private final String email;
-    private PreRegisterStatus status;
+    private CustomerStatus status;
     private final Instant createdAt;
     private Instant updatedAt;
 
-    private PreRegister(UUID id, String document, String name, String email, PreRegisterStatus status, Instant createdAt, Instant updatedAt) {
+    private Customer(UUID id, String document, String name, String email, CustomerStatus status, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.document = document;
         this.name = name;
@@ -25,36 +25,36 @@ public class PreRegister implements DomainEntity {
         this.updatedAt = updatedAt;
     }
 
-    public static PreRegister create(String document, String name, String email) {
+    public static Customer create(String document, String name, String email) {
         UUID id = UUID.randomUUID();
         Instant now = Instant.now();
         
-        return new PreRegister(id, document, name, email, PreRegisterStatus.PENDING, now, now);
+        return new Customer(id, document, name, email, CustomerStatus.PENDING, now, now);
     }
 
     public void approve() {
-        if (this.status != PreRegisterStatus.PENDING) {
-            throw new IllegalArgumentException("Pre-register status is not pending");
+        if (this.status != CustomerStatus.PENDING) {
+            throw new IllegalArgumentException("Customer status is not pending");
         }
 
-        if (this.status == PreRegisterStatus.APPROVED) {
-            throw new IllegalArgumentException("Pre-register is already approved");
+        if (this.status == CustomerStatus.APPROVED) {
+            throw new IllegalArgumentException("Customer is already approved");
         }
 
-        this.status = PreRegisterStatus.APPROVED;
+        this.status = CustomerStatus.APPROVED;
         this.updatedAt = Instant.now();
     }
 
     public void reject() {
-        if (this.status != PreRegisterStatus.PENDING) {
-            throw new IllegalArgumentException("Pre-register status is not pending");
+        if (this.status != CustomerStatus.PENDING) {
+            throw new IllegalArgumentException("Customer status is not pending");
         }
 
-        if (this.status == PreRegisterStatus.REJECTED) {
-            throw new IllegalArgumentException("Pre-register is already rejected");
+        if (this.status == CustomerStatus.REJECTED) {
+            throw new IllegalArgumentException("Customer is already rejected");
         }
 
-        this.status = PreRegisterStatus.REJECTED;
+        this.status = CustomerStatus.REJECTED;
         this.updatedAt = Instant.now();
     }
 
@@ -74,7 +74,7 @@ public class PreRegister implements DomainEntity {
         return email;
     }
 
-    public PreRegisterStatus status() {
+    public CustomerStatus status() {
         return status;
     }
 
@@ -91,12 +91,12 @@ public class PreRegister implements DomainEntity {
         String document, 
         String name, 
         String email, 
-        PreRegisterStatus status, 
+        CustomerStatus status, 
         Instant createdAt, 
         Instant updatedAt) {}
 
-    public static PreRegister fromSnapshot(Snapshot snapshot) {
-        return new PreRegister(
+    public static Customer fromSnapshot(Snapshot snapshot) {
+        return new Customer(
             snapshot.id(),
             snapshot.document(),
             snapshot.name(),

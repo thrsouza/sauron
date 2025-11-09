@@ -5,8 +5,8 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PreRegisterJpaRepository extends JpaRepository<PreRegisterEntity, UUID> {
+public interface CustomerJpaRepository extends JpaRepository<CustomerEntity, UUID> {
     
-    Optional<PreRegisterEntity> findByDocument(String document);
+    Optional<CustomerEntity> findByDocument(String document);
     
 }
