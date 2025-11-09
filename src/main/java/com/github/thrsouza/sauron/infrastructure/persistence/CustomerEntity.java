@@ -13,10 +13,10 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity(name = "Customer") 
-@Table(name = "customers")
 @Getter
 @Setter
+@Entity(name = "Customer") 
+@Table(name = "customers")
 public class CustomerEntity {
     @Id
     private UUID id;
@@ -39,7 +39,7 @@ public class CustomerEntity {
     @Column(nullable = false)
     private Instant updatedAt;
 
-        public static CustomerEntity of(Customer customer) {
+    public static CustomerEntity of(Customer customer) {
         CustomerEntity customerEntity = new CustomerEntity();
 
         customerEntity.setId(customer.id());

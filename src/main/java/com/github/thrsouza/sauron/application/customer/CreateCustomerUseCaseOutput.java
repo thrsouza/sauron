@@ -1,4 +1,4 @@
-package com.github.thrsouza.sauron.application.usecases.customer;
+package com.github.thrsouza.sauron.application.customer;
 
 import java.util.UUID;
 

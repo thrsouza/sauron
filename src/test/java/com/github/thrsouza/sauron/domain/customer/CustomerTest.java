@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Customer Domain Entity Tests")
 class CustomerTest {
-
     @Nested
     @DisplayName("Creation Tests")
     class CreationTests {

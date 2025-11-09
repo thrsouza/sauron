@@ -4,17 +4,16 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
-import com.github.thrsouza.sauron.application.repositories.CustomerRepository;
 import com.github.thrsouza.sauron.domain.customer.Customer;
+import com.github.thrsouza.sauron.domain.customer.CustomerRepository;
 import com.github.thrsouza.sauron.infrastructure.persistence.CustomerEntity;
 import com.github.thrsouza.sauron.infrastructure.persistence.CustomerJpaRepository;
 
 @Component
-public class CustomerDatabaseRepository implements CustomerRepository {
-    
+public class CustomerSpringDataRepository implements CustomerRepository {
     private final CustomerJpaRepository customerJpaRepository;
 
-    public CustomerDatabaseRepository(CustomerJpaRepository customerJpaRepository) {
+    public CustomerSpringDataRepository(CustomerJpaRepository customerJpaRepository) {
         this.customerJpaRepository = customerJpaRepository;
     }
 

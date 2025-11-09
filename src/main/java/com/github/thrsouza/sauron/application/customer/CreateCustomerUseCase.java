@@ -1,13 +1,12 @@
-package com.github.thrsouza.sauron.application.usecases.customer;
+package com.github.thrsouza.sauron.application.customer;
 
 import java.util.Optional;
 
-import com.github.thrsouza.sauron.application.repositories.CustomerRepository;
-import com.github.thrsouza.sauron.application.usecases.UseCase;
+import com.github.thrsouza.sauron.application.UseCase;
 import com.github.thrsouza.sauron.domain.customer.Customer;
+import com.github.thrsouza.sauron.domain.customer.CustomerRepository;
 
 public class CreateCustomerUseCase implements UseCase<CreateCustomerUseCaseInput, CreateCustomerUseCaseOutput> {
-
     private final CustomerRepository customerRepository;
 
     public CreateCustomerUseCase(CustomerRepository customerRepository) {
@@ -15,7 +14,7 @@ public class CreateCustomerUseCase implements UseCase<CreateCustomerUseCaseInput
     }
 
     @Override
-    public CreateCustomerUseCaseOutput execute(CreateCustomerUseCaseInput input) {
+    public CreateCustomerUseCaseOutput handle(CreateCustomerUseCaseInput input) {
         Optional<Customer> existingCustomer = customerRepository.findByDocument(input.document());
 
         if (existingCustomer.isPresent()) {

@@ -1,7 +1,7 @@
-package com.github.thrsouza.sauron.application.usecases.customer;
+package com.github.thrsouza.sauron.application.customer;
 
-import com.github.thrsouza.sauron.application.repositories.CustomerRepository;
 import com.github.thrsouza.sauron.domain.customer.Customer;
+import com.github.thrsouza.sauron.domain.customer.CustomerRepository;
 import com.github.thrsouza.sauron.domain.customer.CustomerStatus;
 
 import org.junit.jupiter.api.DisplayName;
@@ -25,7 +25,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CreateCustomerUseCase Tests")
 class CreateCustomerUseCaseTest {
-
     @Mock
     private CustomerRepository customerRepository;
 
@@ -51,7 +50,7 @@ class CreateCustomerUseCaseTest {
             when(customerRepository.findByDocument(document)).thenReturn(Optional.empty());
 
             // When
-            CreateCustomerUseCaseOutput output = createCustomerUseCase.execute(input);
+            CreateCustomerUseCaseOutput output = createCustomerUseCase.handle(input);
 
             // Then
             assertNotNull(output);
@@ -72,7 +71,7 @@ class CreateCustomerUseCaseTest {
             when(customerRepository.findByDocument(document)).thenReturn(Optional.empty());
 
             // When
-            CreateCustomerUseCaseOutput output = createCustomerUseCase.execute(input);
+            CreateCustomerUseCaseOutput output = createCustomerUseCase.handle(input);
 
             // Then
             verify(customerRepository).save(customerCaptor.capture());
@@ -113,7 +112,7 @@ class CreateCustomerUseCaseTest {
             when(customerRepository.findByDocument(document)).thenReturn(Optional.of(existing));
 
             // When
-            CreateCustomerUseCaseOutput output = createCustomerUseCase.execute(input);
+            CreateCustomerUseCaseOutput output = createCustomerUseCase.handle(input);
 
             // Then
             assertNotNull(output);
@@ -141,7 +140,7 @@ class CreateCustomerUseCaseTest {
             when(customerRepository.findByDocument(document)).thenReturn(Optional.of(approvedCustomer));
 
             // When
-            CreateCustomerUseCaseOutput output = createCustomerUseCase.execute(input);
+            CreateCustomerUseCaseOutput output = createCustomerUseCase.handle(input);
 
             // Then
             assertEquals(approvedId, output.id());
@@ -168,8 +167,8 @@ class CreateCustomerUseCaseTest {
             when(customerRepository.findByDocument("22222222222")).thenReturn(Optional.empty());
 
             // When
-            CreateCustomerUseCaseOutput output1 = createCustomerUseCase.execute(input1);
-            CreateCustomerUseCaseOutput output2 = createCustomerUseCase.execute(input2);
+            CreateCustomerUseCaseOutput output1 = createCustomerUseCase.handle(input1);
+            CreateCustomerUseCaseOutput output2 = createCustomerUseCase.handle(input2);
 
             // Then
             assertNotNull(output1.id());
@@ -191,8 +190,8 @@ class CreateCustomerUseCaseTest {
             when(customerRepository.findByDocument(document)).thenReturn(Optional.of(existingCustomer));
 
             // When
-            CreateCustomerUseCaseOutput output1 = createCustomerUseCase.execute(input);
-            CreateCustomerUseCaseOutput output2 = createCustomerUseCase.execute(input);
+            CreateCustomerUseCaseOutput output1 = createCustomerUseCase.handle(input);
+            CreateCustomerUseCaseOutput output2 = createCustomerUseCase.handle(input);
 
             // Then
             assertEquals(output1.id(), output2.id());

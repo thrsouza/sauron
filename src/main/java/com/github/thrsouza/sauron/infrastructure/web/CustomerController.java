@@ -7,14 +7,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.thrsouza.sauron.application.usecases.customer.CreateCustomerUseCase;
-import com.github.thrsouza.sauron.application.usecases.customer.CreateCustomerUseCaseInput;
-import com.github.thrsouza.sauron.application.usecases.customer.CreateCustomerUseCaseOutput;
+import com.github.thrsouza.sauron.application.customer.CreateCustomerUseCase;
+import com.github.thrsouza.sauron.application.customer.CreateCustomerUseCaseInput;
+import com.github.thrsouza.sauron.application.customer.CreateCustomerUseCaseOutput;
 
 @RestController
 @RequestMapping(value = "/api/customers")
 public class CustomerController {
-
     private final CreateCustomerUseCase createCustomerUseCase;
 
     public CustomerController(CreateCustomerUseCase createCustomerUseCase) {
@@ -23,7 +22,7 @@ public class CustomerController {
 
     @PostMapping(value = "/register")
     public ResponseEntity<CreateCustomerUseCaseOutput> create(@RequestBody CreateCustomerUseCaseInput input) {
-        CreateCustomerUseCaseOutput output = createCustomerUseCase.execute(input);
+        CreateCustomerUseCaseOutput output = createCustomerUseCase.handle(input);
         return ResponseEntity.status(HttpStatus.CREATED).body(output);
     }
     

@@ -3,10 +3,12 @@ package com.github.thrsouza.sauron.domain.customer;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.github.thrsouza.sauron.domain.DomainEntity;
+import com.github.thrsouza.sauron.domain.AggregateRoot;
+import com.github.thrsouza.sauron.domain.customer.events.CustomerApproved;
+import com.github.thrsouza.sauron.domain.customer.events.CustomerCreated;
+import com.github.thrsouza.sauron.domain.customer.events.CustomerRejected;
 
-public class Customer implements DomainEntity {
-
+public class Customer extends AggregateRoot {
     private final UUID id;
     private final String document;
     private final String name;
@@ -29,7 +31,10 @@ public class Customer implements DomainEntity {
         UUID id = UUID.randomUUID();
         Instant now = Instant.now();
         
-        return new Customer(id, document, name, email, CustomerStatus.PENDING, now, now);
+        Customer customer = new Customer(id, document, name, email, CustomerStatus.PENDING, now, now);
+        customer.recordDomainEvent(new CustomerCreated(customer.id()));
+
+        return customer;
     }
 
     public void approve() {
@@ -43,6 +48,8 @@ public class Customer implements DomainEntity {
 
         this.status = CustomerStatus.APPROVED;
         this.updatedAt = Instant.now();
+
+        this.recordDomainEvent(new CustomerApproved(this.id()));
     }
 
     public void reject() {
@@ -56,6 +63,8 @@ public class Customer implements DomainEntity {
 
         this.status = CustomerStatus.REJECTED;
         this.updatedAt = Instant.now();
+
+        this.recordDomainEvent(new CustomerRejected(this.id()));
     }
 
     public UUID id() {
