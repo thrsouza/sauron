@@ -55,7 +55,7 @@ By default the service starts on `http://localhost:8080` and uses an in-memory H
 REST API
 --------
 
-`POST /api/pre-register`
+`POST /api/customer/register`
 
 - Purpose: Create (or reuse) a customer pre-registration record.
 - Request body:
