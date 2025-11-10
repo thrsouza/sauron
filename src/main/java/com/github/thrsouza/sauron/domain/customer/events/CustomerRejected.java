@@ -16,7 +16,6 @@ public record CustomerRejected(
 
     @Override
     public String eventType() {
-        return "SAURON.CUSTOMER_REJECTED";
+        return "sauron.customer-rejected";
     }
-    
 }

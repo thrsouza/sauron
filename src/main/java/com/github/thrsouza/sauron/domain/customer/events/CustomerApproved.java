@@ -16,7 +16,6 @@ public record CustomerApproved(
 
     @Override
     public String eventType() {
-        return "SAURON.CUSTOMER_APPROVED";
+        return "sauron.customer-approved";
     }
-    
 }

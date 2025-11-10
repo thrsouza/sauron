@@ -11,5 +11,4 @@ public class SauronApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SauronApplication.class, args);
 	}
-
 }

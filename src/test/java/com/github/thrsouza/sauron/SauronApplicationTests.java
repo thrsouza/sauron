@@ -9,5 +9,4 @@ class SauronApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

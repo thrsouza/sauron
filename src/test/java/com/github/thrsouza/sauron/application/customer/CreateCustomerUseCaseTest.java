@@ -1,6 +1,6 @@
 package com.github.thrsouza.sauron.application.customer;
 
-import com.github.thrsouza.sauron.application.DomainEventBus;
+import com.github.thrsouza.sauron.domain.DomainEventPublisher;
 import com.github.thrsouza.sauron.domain.customer.Customer;
 import com.github.thrsouza.sauron.domain.customer.CustomerRepository;
 import com.github.thrsouza.sauron.domain.customer.CustomerStatus;
@@ -26,8 +26,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CreateCustomerUseCase Tests")
 class CreateCustomerUseCaseTest {
+
     @Mock
-    private DomainEventBus domainEventBus;
+    private DomainEventPublisher domainEventPublisher;
 
     @Mock
     private CustomerRepository customerRepository;

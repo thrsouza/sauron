@@ -9,6 +9,7 @@ import com.github.thrsouza.sauron.domain.customer.events.CustomerCreated;
 import com.github.thrsouza.sauron.domain.customer.events.CustomerRejected;
 
 public class Customer extends AggregateRoot {
+    
     private final UUID id;
     private final String document;
     private final String name;

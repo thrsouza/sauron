@@ -15,21 +15,28 @@ Features
 
 - Idempotent customer registration flow powered by `CreateCustomerUseCase`, which reuses the same identifier when the same document is submitted again.
 - Customer status management with three states: `PENDING` (awaiting evaluation), `APPROVED` (passed credit score evaluation), and `REJECTED` (failed evaluation).
+- Event-driven architecture using Apache Kafka for asynchronous processing:
+  - Domain events (`CustomerCreated`, `CustomerApproved`, `CustomerRejected`) published to Kafka topics.
+  - Automatic credit score evaluation triggered by `CustomerCreated` events via `EvaluateCustomerUseCase`.
+  - Decoupled event producers and consumers for scalable message processing.
 - Clean Architecture (Ports and Adapters) layering:
   - Domain models live in `src/main/java/com/github/thrsouza/sauron/domain`.
   - Application use cases and repository interfaces are in `application`.
-  - Infrastructure adapters (REST controller, JPA repository, configuration) are in `infrastructure`.
+  - Infrastructure adapters (REST controller, JPA repository, Kafka messaging, configuration) are in `infrastructure`.
 - Persistence handled by Spring Data JPA on top of an in-memory H2 database (ideal for demos and tests).
-- Lightweight REST API ready for integration with credit score evaluation services.
+- Lightweight REST API with asynchronous event-driven credit score evaluation.
 
 Tech Stack
 ----------
 
 - Java 25
-- Spring Boot 4.0.0-SNAPSHOT (Web MVC + Data JPA)
+- Spring Boot 4.0.0-SNAPSHOT (Web MVC + Data JPA + Kafka)
+- Apache Kafka for event-driven messaging
 - H2 in-memory database
+- Jackson for JSON serialization
 - Lombok for boilerplate reduction
 - Maven wrapper for reproducible builds
+- Docker Compose for local infrastructure setup
 
 Getting Started
 ---------------
@@ -38,8 +45,19 @@ Getting Started
 
 - Java Development Kit (JDK) 25
 - Maven 3.9+ (optional if you rely on the bundled `mvnw` wrapper)
+- Docker and Docker Compose (for running Kafka locally)
 
 ### Running the application
+
+1. Start Kafka using Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+This will start an Apache Kafka broker on `localhost:9092` with 3 partitions.
+
+2. Run the Spring Boot application:
 
 ```bash
 ./mvnw spring-boot:run
@@ -47,11 +65,19 @@ Getting Started
 
 By default the service starts on `http://localhost:8080` and uses an in-memory H2 database defined in `src/main/resources/application.properties`. Schema changes are managed automatically (`spring.jpa.hibernate.ddl-auto=update`), making local development effortless.
 
+### Stopping the infrastructure
+
+```bash
+docker-compose down
+```
+
 ### Executing tests
 
 ```bash
 ./mvnw test
 ```
+
+**Note:** If you encounter Mockito initialization errors with Java 25 on macOS (related to ByteBuddy agent attachment), this is a known compatibility issue. The domain tests (`CustomerTest`) and integration tests (`SauronApplicationTests`) should pass successfully. Use case tests may require Java 21 LTS or earlier for Mockito to work properly on macOS.
 
 REST API
 --------
@@ -77,26 +103,30 @@ REST API
 }
 ```
 
-If a customer already exists for the given `document`, the service returns the existing identifier. This makes the endpoint safe to call multiple times without creating duplicates. The customer remains in `PENDING` status until approved or rejected through the evaluation process.
+If a customer already exists for the given `document`, the service returns the existing identifier. This makes the endpoint safe to call multiple times without creating duplicates.
 
-Project Layout
---------------
+### Event-Driven Flow
 
-```text
-src/main/java/com/github/thrsouza/sauron/
-├── SauronApplication.java               # Spring Boot entry point
-├── application/                         # Use cases and repository interfaces
-├── domain/                              # Domain entities and value objects
-└── infrastructure/                      # REST controllers, persistence adapters
-```
+When a customer is registered:
+
+1. The customer is created with `PENDING` status
+2. A `CustomerCreated` event is published to the `sauron.customer-created` Kafka topic
+3. The Kafka `Consumer` receives the event and triggers `EvaluateCustomerUseCase`
+4. After evaluating the credit score (simulated with a 5-second delay and random approval):
+   - If approved: publishes `CustomerApproved` event to `sauron.customer-approved`
+   - If rejected: publishes `CustomerRejected` event to `sauron.customer-rejected`
+
+This asynchronous architecture ensures the registration endpoint responds quickly while the evaluation happens in the background.
 
 Next Steps
 ----------
 
-- Integrate with external credit score evaluation services to automatically approve or reject customers based on their document/CPF.
+- Replace simulated credit score evaluation with real external service integration.
 - Implement query endpoints to list customers by status (pending, approved, rejected).
 - Add persistence migrations (e.g., Flyway) when moving beyond the in-memory database.
-- Integrate observability (logging/metrics) so the Eye can report what it sees and tracks the evaluation process.
+- Integrate observability (logging/metrics/distributed tracing) so the Eye can report what it sees and tracks the evaluation process across the event-driven flow.
+- Add dead letter queues (DLQ) for failed event processing.
+- Implement idempotency keys for event consumers to handle duplicate message delivery.
 
 License
 -------

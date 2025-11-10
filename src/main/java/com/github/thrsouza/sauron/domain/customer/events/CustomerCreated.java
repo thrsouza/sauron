@@ -16,7 +16,6 @@ public record CustomerCreated(
 
     @Override
     public String eventType() {
-        return "SAURON.CUSTOMER_CREATED";
+        return "sauron.customer-created";
     }
-    
 }
