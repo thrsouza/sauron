@@ -6,12 +6,12 @@ import java.util.UUID;
 import com.github.thrsouza.sauron.domain.DomainEvent;
 
 public record CustomerCreated(
-    UUID customerId,
     UUID eventId,
+    UUID customerId,
     Instant eventOccurredAt) implements DomainEvent {
 
     public CustomerCreated(UUID customerId) {
-        this(customerId, UUID.randomUUID(), Instant.now());
+        this(UUID.randomUUID(), customerId, Instant.now());
     }
 
     @Override
