@@ -1,5 +1,6 @@
 package com.github.thrsouza.sauron.application.customer;
 
+import com.github.thrsouza.sauron.application.DomainEventBus;
 import com.github.thrsouza.sauron.domain.customer.Customer;
 import com.github.thrsouza.sauron.domain.customer.CustomerRepository;
 import com.github.thrsouza.sauron.domain.customer.CustomerStatus;
@@ -26,6 +27,9 @@ import static org.mockito.Mockito.*;
 @DisplayName("CreateCustomerUseCase Tests")
 class CreateCustomerUseCaseTest {
     @Mock
+    private DomainEventBus domainEventBus;
+
+    @Mock
     private CustomerRepository customerRepository;
 
     @InjectMocks
@@ -45,12 +49,12 @@ class CreateCustomerUseCaseTest {
             String document = "12345678900";
             String name = "John Doe";
             String email = "john.doe@example.com";
-            CreateCustomerUseCaseInput input = new CreateCustomerUseCaseInput(document, name, email);
+            CreateCustomerUseCase.Input input = new CreateCustomerUseCase.Input(document, name, email);
 
             when(customerRepository.findByDocument(document)).thenReturn(Optional.empty());
 
             // When
-            CreateCustomerUseCaseOutput output = createCustomerUseCase.handle(input);
+            CreateCustomerUseCase.Output output = createCustomerUseCase.handle(input);
 
             // Then
             assertNotNull(output);
@@ -66,12 +70,12 @@ class CreateCustomerUseCaseTest {
             String document = "12345678900";
             String name = "John Doe";
             String email = "john.doe@example.com";
-            CreateCustomerUseCaseInput input = new CreateCustomerUseCaseInput(document, name, email);
+            CreateCustomerUseCase.Input input = new CreateCustomerUseCase.Input(document, name, email);
 
             when(customerRepository.findByDocument(document)).thenReturn(Optional.empty());
 
             // When
-            CreateCustomerUseCaseOutput output = createCustomerUseCase.handle(input);
+            CreateCustomerUseCase.Output output = createCustomerUseCase.handle(input);
 
             // Then
             verify(customerRepository).save(customerCaptor.capture());
@@ -100,7 +104,7 @@ class CreateCustomerUseCaseTest {
             String document = "12345678900";
             String name = "John Doe";
             String email = "john.doe@example.com";
-            CreateCustomerUseCaseInput input = new CreateCustomerUseCaseInput(document, name, email);
+            CreateCustomerUseCase.Input input = new CreateCustomerUseCase.Input(document, name, email);
 
             UUID existingId = UUID.randomUUID();
             Customer.Snapshot snapshot = new Customer.Snapshot(
@@ -112,7 +116,7 @@ class CreateCustomerUseCaseTest {
             when(customerRepository.findByDocument(document)).thenReturn(Optional.of(existing));
 
             // When
-            CreateCustomerUseCaseOutput output = createCustomerUseCase.handle(input);
+            CreateCustomerUseCase.Output output = createCustomerUseCase.handle(input);
 
             // Then
             assertNotNull(output);
@@ -126,7 +130,7 @@ class CreateCustomerUseCaseTest {
         void shouldReturnExistingUUIDRegardlessOfStatus() {
             // Given
             String document = "12345678900";
-            CreateCustomerUseCaseInput input = new CreateCustomerUseCaseInput(
+            CreateCustomerUseCase.Input input = new CreateCustomerUseCase.Input(
                 document, "John Doe", "john@example.com"
             );
 
@@ -140,7 +144,7 @@ class CreateCustomerUseCaseTest {
             when(customerRepository.findByDocument(document)).thenReturn(Optional.of(approvedCustomer));
 
             // When
-            CreateCustomerUseCaseOutput output = createCustomerUseCase.handle(input);
+            CreateCustomerUseCase.Output output = createCustomerUseCase.handle(input);
 
             // Then
             assertEquals(approvedId, output.id());
@@ -156,10 +160,10 @@ class CreateCustomerUseCaseTest {
         @DisplayName("Should handle consecutive executions correctly")
         void shouldHandleConsecutiveExecutionsCorrectly() {
             // Given
-            CreateCustomerUseCaseInput input1 = new CreateCustomerUseCaseInput(
+            CreateCustomerUseCase.Input input1 = new CreateCustomerUseCase.Input(
                 "11111111111", "User One", "user1@example.com"
             );
-            CreateCustomerUseCaseInput input2 = new CreateCustomerUseCaseInput(
+            CreateCustomerUseCase.Input input2 = new CreateCustomerUseCase.Input(
                 "22222222222", "User Two", "user2@example.com"
             );
 
@@ -167,8 +171,8 @@ class CreateCustomerUseCaseTest {
             when(customerRepository.findByDocument("22222222222")).thenReturn(Optional.empty());
 
             // When
-            CreateCustomerUseCaseOutput output1 = createCustomerUseCase.handle(input1);
-            CreateCustomerUseCaseOutput output2 = createCustomerUseCase.handle(input2);
+            CreateCustomerUseCase.Output output1 = createCustomerUseCase.handle(input1);
+            CreateCustomerUseCase.Output output2 = createCustomerUseCase.handle(input2);
 
             // Then
             assertNotNull(output1.id());
@@ -182,7 +186,7 @@ class CreateCustomerUseCaseTest {
         void shouldReturnSameUUIDForDuplicateDocument() {
             // Given
             String document = "12345678900";
-            CreateCustomerUseCaseInput input = new CreateCustomerUseCaseInput(
+            CreateCustomerUseCase.Input input = new CreateCustomerUseCase.Input(
                 document, "John Doe", "john@example.com"
             );
 
@@ -190,8 +194,8 @@ class CreateCustomerUseCaseTest {
             when(customerRepository.findByDocument(document)).thenReturn(Optional.of(existingCustomer));
 
             // When
-            CreateCustomerUseCaseOutput output1 = createCustomerUseCase.handle(input);
-            CreateCustomerUseCaseOutput output2 = createCustomerUseCase.handle(input);
+            CreateCustomerUseCase.Output output1 = createCustomerUseCase.handle(input);
+            CreateCustomerUseCase.Output output2 = createCustomerUseCase.handle(input);
 
             // Then
             assertEquals(output1.id(), output2.id());
