@@ -3,7 +3,7 @@ Sauron
 
 Sauron is a Spring Boot sample service that manages customer registrations and their approval workflow based on document (CPF) validation and credit score evaluation. Much like the Eye of Sauron watches every corner of Middle-earth, this service keeps an unblinking eye on customer registrations, ensuring each application is properly evaluated before approval or rejection.
 
-![Sauron](./assets/sauron.webp "Sauron")
+![Sauron](./assets/sauron.png "Sauron")
 
 Why "Sauron"?
 -------------
@@ -36,6 +36,7 @@ Tech Stack
 - Apache Kafka for event-driven messaging
 - H2 in-memory database
 - Jakarta Bean Validation with Hibernate Validator (including Brazilian CPF validation)
+- SpringDoc OpenAPI with Scalar UI for interactive API documentation
 - Jackson for JSON serialization
 - Lombok for boilerplate reduction
 - Maven wrapper for reproducible builds
@@ -85,75 +86,14 @@ docker-compose down
 REST API
 --------
 
-### `POST /api/customers/register`
+### API Documentation
 
-- Purpose: Create (or reuse) a customer registration record with `PENDING` status awaiting credit score evaluation.
-- Request body (all fields are validated):
+The service provides interactive API documentation powered by SpringDoc OpenAPI with Scalar UI. Once the application is running, you can access:
 
-```json
-{
-  "document": "00000000000",
-  "name": "Frodo Baggins",
-  "email": "frodo@shire.me"
-}
-```
+- **Scalar UI**: [http://localhost:8080/scalar/index.html](http://localhost:8080/scalar/index.html) - Modern, interactive API documentation interface
+- **OpenAPI JSON**: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs) - Raw OpenAPI specification in JSON format
 
-**Validation rules:**
-- `document`: Required, must be a valid Brazilian CPF (11 digits)
-- `name`: Required, maximum 128 characters
-- `email`: Required, must be a valid email format, maximum 128 characters
-
-- Successful response (`201 Created` with `Location` header):
-
-```
-Location: /api/customers/0f8fad5b-d9cb-469f-a165-70867728950e
-```
-
-- Validation error response (`400 Bad Request`):
-
-```json
-{
-  "title": "Validation failed",
-  "message": "One or more validation errors occurred",
-  "errors": {
-    "document": ["Document must be a valid CPF"],
-    "email": ["Email must be valid"]
-  }
-}
-```
-
-If a customer already exists for the given `document`, the service returns the existing identifier. This makes the endpoint safe to call multiple times without creating duplicates.
-
-### `GET /api/customers/{id}`
-
-- Purpose: Retrieve detailed information about a customer by their unique identifier.
-- Path parameter: `id` (UUID) - The customer's unique identifier
-- Successful response (`200 OK`):
-
-```json
-{
-  "id": "0f8fad5b-d9cb-469f-a165-70867728950e",
-  "document": "00000000000",
-  "name": "Frodo Baggins",
-  "email": "frodo@shire.me",
-  "status": "APPROVED",
-  "createdAt": "2025-11-11T10:00:00Z",
-  "updatedAt": "2025-11-11T10:00:05Z"
-}
-```
-
-**Response fields:**
-- `id`: Customer's unique identifier (UUID)
-- `document`: Customer's CPF document
-- `name`: Customer's full name
-- `email`: Customer's email address
-- `status`: Current status - `PENDING`, `APPROVED`, or `REJECTED`
-- `createdAt`: Timestamp when the customer was registered
-- `updatedAt`: Timestamp of the last status change
-
-- Not found response (`404 Not Found`):
-
-Returns an empty response body when the customer ID does not exist.
+The Scalar UI provides a user-friendly way to explore and test all available endpoints without needing external tools like Postman or curl.
 
 ### Event-Driven Flow
 
@@ -167,17 +107,6 @@ When a customer is registered:
    - If rejected: publishes `CustomerRejected` event to `sauron.customer-rejected`
 
 This asynchronous architecture ensures the registration endpoint responds quickly while the evaluation happens in the background.
-
-Next Steps
-----------
-
-- Replace simulated credit score evaluation with real external service integration.
-- Implement additional query endpoints to list customers by status (pending, approved, rejected) with pagination support.
-- Add persistence migrations (e.g., Flyway) when moving beyond the in-memory database.
-- Integrate observability (logging/metrics/distributed tracing) so the Eye can report what it sees and tracks the evaluation process across the event-driven flow.
-- Add dead letter queues (DLQ) for failed event processing.
-- Implement idempotency keys for event consumers to handle duplicate message delivery.
-- Add integration tests for the REST API endpoints.
 
 License
 -------

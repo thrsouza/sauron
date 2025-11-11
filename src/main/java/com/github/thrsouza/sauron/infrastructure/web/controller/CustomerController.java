@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.thrsouza.sauron.application.customer.CreateCustomerUseCase;
 import com.github.thrsouza.sauron.application.customer.GetCustomerUseCase;
+import com.github.thrsouza.sauron.infrastructure.web.dto.GetCustomerResponse;
 import com.github.thrsouza.sauron.infrastructure.web.dto.RegisterCustomerRequest;
 import com.github.thrsouza.sauron.infrastructure.web.mapper.CustomerWebMapper;
 
@@ -33,7 +34,7 @@ public class CustomerController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<GetCustomerUseCase.Output> get(@PathVariable UUID id) {
+    public ResponseEntity<GetCustomerResponse> get(@PathVariable UUID id) {
         GetCustomerUseCase.Output output = getCustomerUseCase
             .handle(new GetCustomerUseCase.Input(id));
 
@@ -41,7 +42,7 @@ public class CustomerController {
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(output);
+        return ResponseEntity.ok(mapper.toWebOutput(output));
     }
 
     @PostMapping(value = "/register")
