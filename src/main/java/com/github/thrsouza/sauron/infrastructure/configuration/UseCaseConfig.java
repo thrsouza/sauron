@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.github.thrsouza.sauron.application.customer.CreateCustomerUseCase;
 import com.github.thrsouza.sauron.application.customer.EvaluateCustomerUseCase;
+import com.github.thrsouza.sauron.application.customer.GetCustomerUseCase;
 import com.github.thrsouza.sauron.domain.DomainEventPublisher;
 import com.github.thrsouza.sauron.domain.customer.CustomerRepository;
 
@@ -29,5 +30,10 @@ public class UseCaseConfig {
     @Bean
     public EvaluateCustomerUseCase evaluateCustomerUseCase() {
         return new EvaluateCustomerUseCase(customerRepository, domainEventPublisher);
+    }
+
+    @Bean
+    public GetCustomerUseCase getCustomerUseCase() {
+        return new GetCustomerUseCase(customerRepository);
     }
 }

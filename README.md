@@ -85,7 +85,7 @@ docker-compose down
 REST API
 --------
 
-`POST /api/customers/register`
+### `POST /api/customers/register`
 
 - Purpose: Create (or reuse) a customer registration record with `PENDING` status awaiting credit score evaluation.
 - Request body (all fields are validated):
@@ -103,12 +103,10 @@ REST API
 - `name`: Required, maximum 128 characters
 - `email`: Required, must be a valid email format, maximum 128 characters
 
-- Successful response (`201 Created`):
+- Successful response (`201 Created` with `Location` header):
 
-```json
-{
-  "id": "0f8fad5b-d9cb-469f-a165-70867728950e"
-}
+```
+Location: /api/customers/0f8fad5b-d9cb-469f-a165-70867728950e
 ```
 
 - Validation error response (`400 Bad Request`):
@@ -125,6 +123,37 @@ REST API
 ```
 
 If a customer already exists for the given `document`, the service returns the existing identifier. This makes the endpoint safe to call multiple times without creating duplicates.
+
+### `GET /api/customers/{id}`
+
+- Purpose: Retrieve detailed information about a customer by their unique identifier.
+- Path parameter: `id` (UUID) - The customer's unique identifier
+- Successful response (`200 OK`):
+
+```json
+{
+  "id": "0f8fad5b-d9cb-469f-a165-70867728950e",
+  "document": "00000000000",
+  "name": "Frodo Baggins",
+  "email": "frodo@shire.me",
+  "status": "APPROVED",
+  "createdAt": "2025-11-11T10:00:00Z",
+  "updatedAt": "2025-11-11T10:00:05Z"
+}
+```
+
+**Response fields:**
+- `id`: Customer's unique identifier (UUID)
+- `document`: Customer's CPF document
+- `name`: Customer's full name
+- `email`: Customer's email address
+- `status`: Current status - `PENDING`, `APPROVED`, or `REJECTED`
+- `createdAt`: Timestamp when the customer was registered
+- `updatedAt`: Timestamp of the last status change
+
+- Not found response (`404 Not Found`):
+
+Returns an empty response body when the customer ID does not exist.
 
 ### Event-Driven Flow
 
@@ -143,11 +172,12 @@ Next Steps
 ----------
 
 - Replace simulated credit score evaluation with real external service integration.
-- Implement query endpoints to list customers by status (pending, approved, rejected).
+- Implement additional query endpoints to list customers by status (pending, approved, rejected) with pagination support.
 - Add persistence migrations (e.g., Flyway) when moving beyond the in-memory database.
 - Integrate observability (logging/metrics/distributed tracing) so the Eye can report what it sees and tracks the evaluation process across the event-driven flow.
 - Add dead letter queues (DLQ) for failed event processing.
 - Implement idempotency keys for event consumers to handle duplicate message delivery.
+- Add integration tests for the REST API endpoints.
 
 License
 -------
