@@ -25,6 +25,8 @@ Features
   - Infrastructure adapters (REST controller, JPA repository, Kafka messaging, configuration) are in `infrastructure`.
 - Persistence handled by Spring Data JPA on top of an in-memory H2 database (ideal for demos and tests).
 - Lightweight REST API with asynchronous event-driven credit score evaluation.
+- Input validation using Jakarta Bean Validation with custom validators for Brazilian CPF documents.
+- Global exception handling with structured error responses for validation failures.
 
 Tech Stack
 ----------
@@ -33,6 +35,7 @@ Tech Stack
 - Spring Boot 4.0.0-SNAPSHOT (Web MVC + Data JPA + Kafka)
 - Apache Kafka for event-driven messaging
 - H2 in-memory database
+- Jakarta Bean Validation with Hibernate Validator (including Brazilian CPF validation)
 - Jackson for JSON serialization
 - Lombok for boilerplate reduction
 - Maven wrapper for reproducible builds
@@ -85,7 +88,7 @@ REST API
 `POST /api/customers/register`
 
 - Purpose: Create (or reuse) a customer registration record with `PENDING` status awaiting credit score evaluation.
-- Request body:
+- Request body (all fields are validated):
 
 ```json
 {
@@ -95,11 +98,29 @@ REST API
 }
 ```
 
+**Validation rules:**
+- `document`: Required, must be a valid Brazilian CPF (11 digits)
+- `name`: Required, maximum 128 characters
+- `email`: Required, must be a valid email format, maximum 128 characters
+
 - Successful response (`201 Created`):
 
 ```json
 {
   "id": "0f8fad5b-d9cb-469f-a165-70867728950e"
+}
+```
+
+- Validation error response (`400 Bad Request`):
+
+```json
+{
+  "title": "Validation failed",
+  "message": "One or more validation errors occurred",
+  "errors": {
+    "document": ["Document must be a valid CPF"],
+    "email": ["Email must be valid"]
+  }
 }
 ```
 
