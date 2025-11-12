@@ -4,6 +4,7 @@ import com.github.thrsouza.sauron.domain.DomainEvent;
 import com.github.thrsouza.sauron.domain.DomainEventPublisher;
 import com.github.thrsouza.sauron.domain.customer.Customer;
 import com.github.thrsouza.sauron.domain.customer.CustomerRepository;
+import com.github.thrsouza.sauron.domain.customer.CustomerScoreService;
 import com.github.thrsouza.sauron.domain.customer.CustomerStatus;
 import com.github.thrsouza.sauron.domain.customer.events.CustomerApproved;
 import com.github.thrsouza.sauron.domain.customer.events.CustomerRejected;
@@ -36,6 +37,9 @@ class EvaluateCustomerUseCaseTest {
 
     @Mock
     private CustomerRepository customerRepository;
+
+    @Mock
+    private CustomerScoreService customerScoreService;
 
     @InjectMocks
     private EvaluateCustomerUseCase evaluateCustomerUseCase;
@@ -88,7 +92,8 @@ class EvaluateCustomerUseCaseTest {
             Customer customer = Customer.fromSnapshot(snapshot);
 
             when(customerRepository.findById(customerId)).thenReturn(Optional.of(customer));
-
+            when(customerScoreService.getScoreByDocument(customer.document())).thenReturn(800);
+            
             // When
             evaluateCustomerUseCase.handle(input);
 

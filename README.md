@@ -19,10 +19,14 @@ Features
   - Domain events (`CustomerCreated`, `CustomerApproved`, `CustomerRejected`) published to Kafka topics.
   - Automatic credit score evaluation triggered by `CustomerCreated` events via `EvaluateCustomerUseCase`.
   - Decoupled event producers and consumers for scalable message processing.
-- Clean Architecture (Ports and Adapters) layering:
+- Credit score evaluation using external service integration:
+  - `CustomerScoreService` domain interface defines the contract for credit score retrieval.
+  - `CustomerScoreServiceHttpAdapter` simulates HTTP integration with external credit score provider.
+  - Score-based approval logic: customers with score > 700 are approved, otherwise rejected.
+- Hexagonal Architecture (Ports and Adapters) layering:
   - Domain models live in `src/main/java/com/github/thrsouza/sauron/domain`.
   - Application use cases and repository interfaces are in `application`.
-  - Infrastructure adapters (REST controller, JPA repository, Kafka messaging, configuration) are in `infrastructure`.
+  - Infrastructure adapters (REST controller, JPA repository, Kafka messaging, HTTP integration, configuration) are in `infrastructure`.
 - Persistence handled by Spring Data JPA on top of an in-memory H2 database (ideal for demos and tests).
 - Lightweight REST API with asynchronous event-driven credit score evaluation.
 - Input validation using Jakarta Bean Validation with custom validators for Brazilian CPF documents.
@@ -102,9 +106,10 @@ When a customer is registered:
 1. The customer is created with `PENDING` status
 2. A `CustomerCreated` event is published to the `sauron.customer-created` Kafka topic
 3. The Kafka `Consumer` receives the event and triggers `EvaluateCustomerUseCase`
-4. After evaluating the credit score (simulated with a 5-second delay and random approval):
-   - If approved: publishes `CustomerApproved` event to `sauron.customer-approved`
-   - If rejected: publishes `CustomerRejected` event to `sauron.customer-rejected`
+4. The use case retrieves the credit score from `CustomerScoreService` (simulated HTTP call with 3-second delay)
+5. Customer is evaluated based on the score:
+   - If score > 700: customer is approved and `CustomerApproved` event is published to `sauron.customer-approved`
+   - If score ≤ 700: customer is rejected and `CustomerRejected` event is published to `sauron.customer-rejected`
 
 This asynchronous architecture ensures the registration endpoint responds quickly while the evaluation happens in the background.
 

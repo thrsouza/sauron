@@ -45,17 +45,18 @@ class CustomerTest {
     class ApprovalTests {
 
         @Test
-        @DisplayName("Should approve pending Customer and update timestamp")
-        void shouldApprovePendingCustomer() throws InterruptedException {
+        @DisplayName("Should approve pending Customer with high score and update timestamp")
+        void shouldApprovePendingCustomerWithHighScore() throws InterruptedException {
             // Given
             Customer customer = Customer.create("12345678900", "John Doe", "john.doe@example.com");
             Instant createdAt = customer.createdAt();
+            int highScore = 800; // Score > 700 should approve
             
             // Small delay to ensure updatedAt is different
             Thread.sleep(1);
 
             // When
-            customer.approve();
+            customer.evaluate(highScore);
 
             // Then
             assertEquals(CustomerStatus.APPROVED, customer.status());
@@ -63,25 +64,25 @@ class CustomerTest {
         }
 
         @Test
-        @DisplayName("Should throw exception when approving non-pending Customer")
-        void shouldThrowExceptionWhenApprovingNonPending() {
+        @DisplayName("Should throw exception when evaluating non-pending Customer for approval")
+        void shouldThrowExceptionWhenEvaluatingNonPendingForApproval() {
             // Already approved
             Customer approvedCustomer = Customer.create("12345678900", "John Doe", "john.doe@example.com");
-            approvedCustomer.approve();
+            approvedCustomer.evaluate(800);
             
             IllegalArgumentException exception1 = assertThrows(
                 IllegalArgumentException.class,
-                () -> approvedCustomer.approve()
+                () -> approvedCustomer.evaluate(800)
             );
             assertEquals("Customer status is not pending", exception1.getMessage());
 
             // Already rejected
             Customer rejectedCustomer = Customer.create("98765432100", "Jane Doe", "jane@example.com");
-            rejectedCustomer.reject();
+            rejectedCustomer.evaluate(600);
             
             IllegalArgumentException exception2 = assertThrows(
                 IllegalArgumentException.class,
-                () -> rejectedCustomer.approve()
+                () -> rejectedCustomer.evaluate(800)
             );
             assertEquals("Customer status is not pending", exception2.getMessage());
         }
@@ -92,17 +93,18 @@ class CustomerTest {
     class RejectionTests {
 
         @Test
-        @DisplayName("Should reject pending Customer and update timestamp")
-        void shouldRejectPendingCustomer() throws InterruptedException {
+        @DisplayName("Should reject pending Customer with low score and update timestamp")
+        void shouldRejectPendingCustomerWithLowScore() throws InterruptedException {
             // Given
             Customer customer = Customer.create("12345678900", "John Doe", "john.doe@example.com");
             Instant createdAt = customer.createdAt();
+            int lowScore = 600; // Score <= 700 should reject
             
             // Small delay to ensure updatedAt is different
             Thread.sleep(1);
 
             // When
-            customer.reject();
+            customer.evaluate(lowScore);
 
             // Then
             assertEquals(CustomerStatus.REJECTED, customer.status());
@@ -110,25 +112,25 @@ class CustomerTest {
         }
 
         @Test
-        @DisplayName("Should throw exception when rejecting non-pending Customer")
-        void shouldThrowExceptionWhenRejectingNonPending() {
+        @DisplayName("Should throw exception when evaluating non-pending Customer for rejection")
+        void shouldThrowExceptionWhenEvaluatingNonPendingForRejection() {
             // Already rejected
             Customer rejectedCustomer = Customer.create("12345678900", "John Doe", "john.doe@example.com");
-            rejectedCustomer.reject();
+            rejectedCustomer.evaluate(600);
             
             IllegalArgumentException exception1 = assertThrows(
                 IllegalArgumentException.class,
-                () -> rejectedCustomer.reject()
+                () -> rejectedCustomer.evaluate(600)
             );
             assertEquals("Customer status is not pending", exception1.getMessage());
 
             // Already approved
             Customer approvedCustomer = Customer.create("98765432100", "Jane Doe", "jane@example.com");
-            approvedCustomer.approve();
+            approvedCustomer.evaluate(800);
             
             IllegalArgumentException exception2 = assertThrows(
                 IllegalArgumentException.class,
-                () -> approvedCustomer.reject()
+                () -> approvedCustomer.evaluate(600)
             );
             assertEquals("Customer status is not pending", exception2.getMessage());
         }
@@ -178,11 +180,11 @@ class CustomerTest {
         void shouldPreventTransitionsFromApproved() {
             // Given
             Customer customer = Customer.create("12345678900", "John Doe", "john.doe@example.com");
-            customer.approve();
+            customer.evaluate(800); // Approve with high score
 
-            // Then
-            assertThrows(IllegalArgumentException.class, () -> customer.approve());
-            assertThrows(IllegalArgumentException.class, () -> customer.reject());
+            // Then - Should not allow re-evaluation with any score
+            assertThrows(IllegalArgumentException.class, () -> customer.evaluate(800));
+            assertThrows(IllegalArgumentException.class, () -> customer.evaluate(600));
         }
 
         @Test
@@ -190,11 +192,11 @@ class CustomerTest {
         void shouldPreventTransitionsFromRejected() {
             // Given
             Customer customer = Customer.create("12345678900", "John Doe", "john.doe@example.com");
-            customer.reject();
+            customer.evaluate(600); // Reject with low score
 
-            // Then
-            assertThrows(IllegalArgumentException.class, () -> customer.approve());
-            assertThrows(IllegalArgumentException.class, () -> customer.reject());
+            // Then - Should not allow re-evaluation with any score
+            assertThrows(IllegalArgumentException.class, () -> customer.evaluate(800));
+            assertThrows(IllegalArgumentException.class, () -> customer.evaluate(600));
         }
     }
 }

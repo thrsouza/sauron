@@ -38,7 +38,15 @@ public class Customer extends AggregateRoot {
         return customer;
     }
 
-    public void approve() {
+    public void evaluate(int score) {
+        if (score > 700) {
+            approve();
+        } else {
+            reject();
+        }
+    }
+
+    private void approve() {
         if (this.status != CustomerStatus.PENDING) {
             throw new IllegalArgumentException("Customer status is not pending");
         }
@@ -53,7 +61,7 @@ public class Customer extends AggregateRoot {
         this.recordDomainEvent(new CustomerApproved(this.id()));
     }
 
-    public void reject() {
+    private void reject() {
         if (this.status != CustomerStatus.PENDING) {
             throw new IllegalArgumentException("Customer status is not pending");
         }

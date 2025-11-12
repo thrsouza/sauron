@@ -10,16 +10,19 @@ import com.github.thrsouza.sauron.application.customer.EvaluateCustomerUseCase;
 import com.github.thrsouza.sauron.application.customer.GetCustomerUseCase;
 import com.github.thrsouza.sauron.domain.DomainEventPublisher;
 import com.github.thrsouza.sauron.domain.customer.CustomerRepository;
+import com.github.thrsouza.sauron.domain.customer.CustomerScoreService;
 
 @Configuration
 public class UseCaseConfig {
     
     private final DomainEventPublisher domainEventPublisher;
     private final CustomerRepository customerRepository;
+    private final CustomerScoreService customerScoreService;
 
-    public UseCaseConfig(DomainEventPublisher domainEventPublisher, CustomerRepository customerRepository) {
+    public UseCaseConfig(DomainEventPublisher domainEventPublisher, CustomerRepository customerRepository, CustomerScoreService customerScoreService) {
         this.domainEventPublisher = Objects.requireNonNull(domainEventPublisher);
         this.customerRepository = Objects.requireNonNull(customerRepository);
+        this.customerScoreService = Objects.requireNonNull(customerScoreService);
     }
 
     @Bean
@@ -29,7 +32,7 @@ public class UseCaseConfig {
 
     @Bean
     public EvaluateCustomerUseCase evaluateCustomerUseCase() {
-        return new EvaluateCustomerUseCase(customerRepository, domainEventPublisher);
+        return new EvaluateCustomerUseCase(customerRepository, domainEventPublisher, customerScoreService);
     }
 
     @Bean
