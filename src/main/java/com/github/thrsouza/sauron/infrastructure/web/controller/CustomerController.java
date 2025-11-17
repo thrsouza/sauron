@@ -17,9 +17,15 @@ import com.github.thrsouza.sauron.infrastructure.web.dto.GetCustomerResponse;
 import com.github.thrsouza.sauron.infrastructure.web.dto.RegisterCustomerRequest;
 import com.github.thrsouza.sauron.infrastructure.web.mapper.CustomerWebMapper;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
+@Tag(name = "Customers", description = "Customer endpoints")
 @RequestMapping(value = "/api/customers")
 public class CustomerController {
     
@@ -34,6 +40,9 @@ public class CustomerController {
     }
 
     @GetMapping(value = "/{id}")
+    @Operation(summary = "Get a customer by ID", description = "Retrieves a customer by their unique identifier")
+    @ApiResponse(responseCode = "200", description = "Customer found", content = @Content(schema = @Schema(implementation = GetCustomerResponse.class)))
+    @ApiResponse(responseCode = "404", description = "Customer not found", content = @Content(schema = @Schema(implementation = Void.class)))
     public ResponseEntity<GetCustomerResponse> get(@PathVariable UUID id) {
         GetCustomerUseCase.Output output = getCustomerUseCase
             .handle(new GetCustomerUseCase.Input(id));
@@ -46,6 +55,10 @@ public class CustomerController {
     }
 
     @PostMapping(value = "/register")
+    @Operation(summary = "Register a new customer", description = "Registers a new customer with the provided information")
+    @ApiResponse(responseCode = "201", description = "Customer registered successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid request body")
+    @ApiResponse(responseCode = "500", description = "Internal server error")
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterCustomerRequest request) {
         CreateCustomerUseCase.Output output = createCustomerUseCase
             .handle(mapper.toUseCaseInput(request));

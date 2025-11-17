@@ -40,7 +40,7 @@ Tech Stack
 - Apache Kafka for event-driven messaging
 - H2 in-memory database
 - Jakarta Bean Validation with Hibernate Validator (including Brazilian CPF validation)
-- SpringDoc OpenAPI with Scalar UI for interactive API documentation
+- SpringDoc OpenAPI with Swagger UI for interactive API documentation
 - Jackson for JSON serialization
 - Lombok for boilerplate reduction
 - Maven wrapper for reproducible builds
@@ -92,12 +92,12 @@ REST API
 
 ### API Documentation
 
-The service provides interactive API documentation powered by SpringDoc OpenAPI with Scalar UI. Once the application is running, you can access:
+The service provides interactive API documentation powered by SpringDoc OpenAPI with Swagger UI. Once the application is running, you can access:
 
-- **Scalar UI**: [http://localhost:8080/scalar/index.html](http://localhost:8080/scalar/index.html) - Modern, interactive API documentation interface
+- **Swagger UI**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html) - Modern, interactive API documentation interface
 - **OpenAPI JSON**: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs) - Raw OpenAPI specification in JSON format
 
-The Scalar UI provides a user-friendly way to explore and test all available endpoints without needing external tools like Postman or curl.
+Swagger UI provides a user-friendly way to explore and test all available endpoints without needing external tools like Postman or curl.
 
 ### Event-Driven Flow
 
