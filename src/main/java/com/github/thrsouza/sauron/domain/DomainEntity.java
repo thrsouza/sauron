@@ -3,7 +3,7 @@ package com.github.thrsouza.sauron.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AggregateRoot {
+public abstract class DomainEntity {
     
     private final transient List<DomainEvent> domainEvents = new ArrayList<>();
 

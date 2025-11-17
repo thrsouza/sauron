@@ -3,12 +3,12 @@ package com.github.thrsouza.sauron.domain.customer;
 import java.time.Instant;
 import java.util.UUID;
 
-import com.github.thrsouza.sauron.domain.AggregateRoot;
+import com.github.thrsouza.sauron.domain.DomainEntity;
 import com.github.thrsouza.sauron.domain.customer.events.CustomerApproved;
 import com.github.thrsouza.sauron.domain.customer.events.CustomerCreated;
 import com.github.thrsouza.sauron.domain.customer.events.CustomerRejected;
 
-public class Customer extends AggregateRoot {
+public class Customer extends DomainEntity {
     
     private final UUID id;
     private final String document;
