@@ -74,7 +74,7 @@ class CustomerTest {
                 IllegalArgumentException.class,
                 () -> approvedCustomer.evaluate(800)
             );
-            assertEquals("Customer status is not pending", exception1.getMessage());
+            assertEquals("Customer is already approved", exception1.getMessage());
 
             // Already rejected
             Customer rejectedCustomer = Customer.create("98765432100", "Jane Doe", "jane@example.com");
@@ -122,7 +122,7 @@ class CustomerTest {
                 IllegalArgumentException.class,
                 () -> rejectedCustomer.evaluate(600)
             );
-            assertEquals("Customer status is not pending", exception1.getMessage());
+            assertEquals("Customer is already rejected", exception1.getMessage());
 
             // Already approved
             Customer approvedCustomer = Customer.create("98765432100", "Jane Doe", "jane@example.com");

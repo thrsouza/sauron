@@ -47,12 +47,12 @@ public class Customer extends DomainEntity {
     }
 
     private void approve() {
-        if (this.status != CustomerStatus.PENDING) {
-            throw new IllegalArgumentException("Customer status is not pending");
-        }
-
         if (this.status == CustomerStatus.APPROVED) {
             throw new IllegalArgumentException("Customer is already approved");
+        }
+
+        if (this.status != CustomerStatus.PENDING) {
+            throw new IllegalArgumentException("Customer status is not pending");
         }
 
         this.status = CustomerStatus.APPROVED;
@@ -62,12 +62,12 @@ public class Customer extends DomainEntity {
     }
 
     private void reject() {
-        if (this.status != CustomerStatus.PENDING) {
-            throw new IllegalArgumentException("Customer status is not pending");
-        }
-
         if (this.status == CustomerStatus.REJECTED) {
             throw new IllegalArgumentException("Customer is already rejected");
+        }
+        
+        if (this.status != CustomerStatus.PENDING) {
+            throw new IllegalArgumentException("Customer status is not pending");
         }
 
         this.status = CustomerStatus.REJECTED;
