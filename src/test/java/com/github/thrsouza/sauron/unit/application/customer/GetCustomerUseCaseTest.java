@@ -1,5 +1,6 @@
-package com.github.thrsouza.sauron.application.customer;
+package com.github.thrsouza.sauron.unit.application.customer;
 
+import com.github.thrsouza.sauron.application.customer.GetCustomerUseCase;
 import com.github.thrsouza.sauron.domain.customer.Customer;
 import com.github.thrsouza.sauron.domain.customer.CustomerRepository;
 import com.github.thrsouza.sauron.domain.customer.CustomerStatus;

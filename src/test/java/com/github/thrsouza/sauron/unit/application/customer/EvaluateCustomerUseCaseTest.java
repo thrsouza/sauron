@@ -1,5 +1,6 @@
-package com.github.thrsouza.sauron.application.customer;
+package com.github.thrsouza.sauron.unit.application.customer;
 
+import com.github.thrsouza.sauron.application.customer.EvaluateCustomerUseCase;
 import com.github.thrsouza.sauron.domain.DomainEvent;
 import com.github.thrsouza.sauron.domain.DomainEventPublisher;
 import com.github.thrsouza.sauron.domain.customer.Customer;

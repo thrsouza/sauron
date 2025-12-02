@@ -1,4 +1,4 @@
-package com.github.thrsouza.sauron.domain.customer;
+package com.github.thrsouza.sauron.unit.domain.customer;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +8,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.github.thrsouza.sauron.domain.customer.Customer;
+import com.github.thrsouza.sauron.domain.customer.CustomerStatus;
 
 @DisplayName("Customer Domain Entity Tests")
 class CustomerTest {
