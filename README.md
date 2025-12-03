@@ -27,7 +27,8 @@ Features
   - Domain models live in `src/main/java/com/github/thrsouza/sauron/domain`.
   - Application use cases and repository interfaces are in `application`.
   - Infrastructure adapters (REST controller, JPA repository, Kafka messaging, HTTP integration, configuration) are in `infrastructure`.
-- Persistence handled by Spring Data JPA on top of an in-memory H2 database (ideal for demos and tests).
+- Persistence handled by Spring Data JPA with PostgreSQL for production and H2 for tests.
+- Database migrations managed by Flyway for version-controlled schema changes.
 - Lightweight REST API with asynchronous event-driven credit score evaluation.
 - Input validation using Jakarta Bean Validation with custom validators for Brazilian CPF documents.
 - Global exception handling with structured error responses for validation failures.
@@ -36,15 +37,17 @@ Tech Stack
 ----------
 
 - Java 25
-- Spring Boot 4.0.0-SNAPSHOT (Web MVC + Data JPA + Kafka)
+- Spring Boot 4.0.0 (Web MVC + Data JPA + Kafka)
 - Apache Kafka for event-driven messaging
-- H2 in-memory database
+- PostgreSQL for production database
+- H2 in-memory database for tests
+- Flyway for database migrations
 - Jakarta Bean Validation with Hibernate Validator (including Brazilian CPF validation)
 - SpringDoc OpenAPI with Swagger UI for interactive API documentation
 - Jackson for JSON serialization
 - Lombok for boilerplate reduction
 - Maven wrapper for reproducible builds
-- Docker Compose for local infrastructure setup
+- Docker Compose for local infrastructure setup (Kafka + PostgreSQL)
 
 Getting Started
 ---------------
@@ -53,17 +56,19 @@ Getting Started
 
 - Java Development Kit (JDK) 25
 - Maven 3.9+ (optional if you rely on the bundled `mvnw` wrapper)
-- Docker and Docker Compose (for running Kafka locally)
+- Docker and Docker Compose (for running Kafka and PostgreSQL locally)
 
 ### Running the application
 
-1. Start Kafka using Docker Compose:
+1. Start infrastructure services (Kafka and PostgreSQL) using Docker Compose:
 
 ```bash
 docker-compose up -d
 ```
 
-This will start an Apache Kafka broker on `localhost:9092` with 3 partitions.
+This will start:
+- Apache Kafka broker on `localhost:9097` with 3 partitions
+- PostgreSQL database on `localhost:5432` with database `sauron` (user: `docker`, password: `docker`)
 
 2. Run the Spring Boot application:
 
@@ -71,12 +76,20 @@ This will start an Apache Kafka broker on `localhost:9092` with 3 partitions.
 ./mvnw spring-boot:run
 ```
 
-By default the service starts on `http://localhost:8080` and uses an in-memory H2 database defined in `src/main/resources/application.properties`. Schema changes are managed automatically (`spring.jpa.hibernate.ddl-auto=update`), making local development effortless.
+By default the service starts on `http://localhost:8080` and uses PostgreSQL for persistence. Database schema is managed by Flyway migrations located in `src/main/resources/db/migration/`. The initial migration creates the `customers` table with proper constraints and indexes.
+
+**Note:** For tests, the application uses H2 in-memory database configured via the `test` profile (`application-test.properties`), ensuring fast and isolated test execution.
 
 ### Stopping the infrastructure
 
 ```bash
 docker-compose down
+```
+
+To also remove volumes (including database data):
+
+```bash
+docker-compose down -v
 ```
 
 ### Executing tests
